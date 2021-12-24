@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import styles from "./styles.module.css";
 
@@ -18,12 +18,13 @@ type AddsSelectorProps = {
 
 export function AddsSelector({ image, disabled, price }: AddsSelectorProps) {
   const [currentDisabled, setDisable] = useState(disabled);
-  console.log(currentDisabled);
   const toggleAdds = () => {
     if (disabled){
     currentDisabled ? setDisable(false) : setDisable(true);
     }
   };
+
+  useEffect(()=> setDisable(currentDisabled))
 
   return (
     <div>
