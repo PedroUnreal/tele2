@@ -1,0 +1,17 @@
+.imageFade {
+    filter: grayscale(100%);
+    opacity: 0.5; 
+}
+
+.picture {
+    width: 30px;
+}
+
+.price {
+    display: none;
+}
+
+.socialNetworks {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
