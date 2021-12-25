@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTariffOptions } from '../../store/asyncActions/addTariffOptions';
 import { selectors } from '../../store/rangeSelectorReducer';
 import { AddsSelector } from './AddsSelector';
 import { RangeSelector } from './RangeSelector';
@@ -7,8 +8,17 @@ import styles from './styles.module.css';
 
 
 export function ChooseTariffPage() {
-  let gigs = useSelector(state => selectors.getGigs(state))
+  const gigs = useSelector(state => selectors.getGigs(state))
+  const userTariff = useSelector(state => selectors.getUserTariff(state))
+  const tariffOptions = useSelector(state => selectors.getTariffOptions(state))
+  const trafficCombo = useSelector(state => selectors.getTrafficCombo(state))
+
   const [output, setOutput] = useState(gigs);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchTariffOptions())
+  }, [dispatch])
 
   useEffect(() => setOutput(gigs))
 
@@ -24,87 +34,67 @@ export function ChooseTariffPage() {
   //    totalPrice: 800
   //    //['fb', 'vk', 'insta']
   //  }
-  const arrayOfTariffs = [
-   {
-    gigs: "3ГБ",
-    messengers: {
-      fb: false,
-      vk: false,
-      ok: false,
-      inst: false,
-      tt: false
-    }
-  },
+  const currentNetworks = useMemo(() => {
+    if (!trafficCombo) return null;
+    return trafficCombo.find((tariff: any) => tariff.gigs === output) || null;
+  }, [trafficCombo, output]);
 
-   {
-    gigs: "10ГБ",
-    messengers: {
-      fb: true,
-      vk: true,
-      ok: true,
-      inst: false,
-      tt: false
-    }
-  },
+  const networks = currentNetworks?.messengers ?? {};
 
-   {
-    gigs: "40ГБ",
-    messengers: {
-      fb: true,
-      vk: true,
-      ok: true,
-      inst: true,
-      tt: true
-    }
-  }
- ]
-    let networks: any
-let currentNetworks = arrayOfTariffs.filter( tariff => tariff.gigs === output)
-if(currentNetworks.length > 0) { networks = currentNetworks[0].messengers;}
+  console.log(currentNetworks, 'currentNetworks');
+  
 
-//let networks = currentNetworks[0].messengers
-   
+  //let networks = currentNetworks[0].messengers
+
+  if (!tariffOptions || !trafficCombo) return null;
+
+  console.log(tariffOptions, 'tariffOptions');
+  
+
   return (
     <div>
       <div>
         <h1>Настройте тариф</h1>
         <RangeSelector
           label="Минуты"
-          values={["200 мин", "400 мин", "500 мин", "800 мин"]}
+          selectedValue={userTariff.minutes}
+          values={tariffOptions.minutes}
         />
         <RangeSelector
           label="Трафик"
-          values={["3ГБ", "10ГБ", "40ГБ"]}
+          selectedValue={userTariff.gigs}
+          values={tariffOptions.gigs}
         />
         <RangeSelector
           label="СМС"
-          values={["10", "50", "100", "300", "500"]}
+          selectedValue={userTariff.sms}
+          values={tariffOptions.sms}
         />
       </div>
       <div className={styles.socialNetworks}>
         <AddsSelector
           image="fb"
-          disabled={(currentNetworks.length > 0) ? !networks.fb : true}
+          disabled={currentNetworks ? !networks.fb : true}
           price={20}
         />
         <AddsSelector
           image="vk"
-          disabled={(currentNetworks.length > 0) ? !networks.vk : true}
+          disabled={currentNetworks ? !networks.vk : true}
           price={20}
         />
         <AddsSelector
           image="ok"
-          disabled={(currentNetworks.length > 0) ? !networks.ok : true}
+          disabled={currentNetworks ? !networks.ok : true}
           price={20}
         />
         <AddsSelector
           image="inst"
-          disabled={(currentNetworks.length > 0) ? !networks.inst : true}
+          disabled={currentNetworks ? !networks.inst : true}
           price={20}
         />
         <AddsSelector
           image="tt"
-          disabled={(currentNetworks.length > 0) ? !networks.tt : true}
+          disabled={currentNetworks ? !networks.tt : true}
           price={20}
         /></div>
 

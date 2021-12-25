@@ -1,19 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { addMinutesAction, addGigsAction, addSmsAction } from "../../store/rangeSelectorReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { addMinutesAction, addGigsAction, addSmsAction, selectors } from "../../store/rangeSelectorReducer";
+
 
 type RangeSelectorProps = {
     label: string;
     values: string[];
+    selectedValue: string
 }
 
-export function RangeSelector({ label, values }: RangeSelectorProps) {
-    const [chosenValue, setChosenValue] = useState(1);
+export function RangeSelector({ label, selectedValue, values }: RangeSelectorProps) {   
+    
+     let counter = values.indexOf(selectedValue)
+    // console.log(values, "values");
+    console.log(counter);
+    
+    const [chosenValue, setChosenValue] = useState(counter);
     const dispatch = useDispatch();
     const mapping = new Map()
     const max = values.length - 1
-
+    
 
     values.forEach((value, index) => mapping.set(index, value))
 
@@ -41,6 +48,8 @@ export function RangeSelector({ label, values }: RangeSelectorProps) {
     useEffect(() => addToStore(mapping.get(chosenValue)))
 
 
+
+
     return (
         <div className="container px-4 m-2" style={{ border: 'solid 1px black' }}>
             <label htmlFor="customRange1" className="form-label">{label}
@@ -58,4 +67,3 @@ export function RangeSelector({ label, values }: RangeSelectorProps) {
         </div>
     );
 }
-
