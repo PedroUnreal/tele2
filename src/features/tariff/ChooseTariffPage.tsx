@@ -8,97 +8,111 @@ import styles from './styles.module.css';
 
 
 export function ChooseTariffPage() {
+
+  const rawCurrentTariff = useSelector(state => selectors.getCurrentTariff(state))
+  console.log(rawCurrentTariff, "raw");
+
+  const currentTariff = {
+    minutes: rawCurrentTariff.minutes,
+    gigs: rawCurrentTariff.gigs,
+    sms: rawCurrentTariff.sms,
+    messengers: {
+      fb: rawCurrentTariff.networks.includes("fb"),
+      vk: rawCurrentTariff.networks.includes("vk"),
+      ok: rawCurrentTariff.networks.includes("ok"),
+      inst: rawCurrentTariff.networks.includes("inst"),
+      tt: rawCurrentTariff.networks.includes("tt")
+    }
+
+  }
+  console.log(currentTariff, "currentTariff");
+
+
   const gigs = useSelector(state => selectors.getGigs(state))
   const userTariff = useSelector(state => selectors.getUserTariff(state))
   const tariffOptions = useSelector(state => selectors.getTariffOptions(state))
   const trafficCombo = useSelector(state => selectors.getTrafficCombo(state))
-
   const [output, setOutput] = useState(gigs);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchTariffOptions())
-  }, [dispatch])
+  }, [])
 
-  useEffect(() => setOutput(gigs))
+  useEffect(() => {
 
-  //  const currentTariff = {
-  //    minutes: '200 min',
-  //    gigs: "3ГБ",
-  //    sms: "10",
-  //    messengers: {
-  //      fb: true,
-  //      vk: false,
+    fetch('api/user-tariff', {
+      method: 'post',
+      body: JSON.stringify(currentTariff)
+    });
+    setOutput(gigs);
+  }, [currentTariff])
 
-  //    },
-  //    totalPrice: 800
-  //    //['fb', 'vk', 'insta']
-  //  }
+  useEffect(() => {
+    dispatch(fetchTariffOptions())
+  }, [currentTariff.gigs, currentTariff.minutes, currentTariff.sms,
+  currentTariff.messengers.fb, currentTariff.messengers.vk, currentTariff.messengers.ok,
+  currentTariff.messengers.inst, currentTariff.messengers.tt,])
+
   const currentNetworks = useMemo(() => {
     if (!trafficCombo) return null;
     return trafficCombo.find((tariff: any) => tariff.gigs === output) || null;
   }, [trafficCombo, output]);
 
   const networks = currentNetworks?.messengers ?? {};
-
-  console.log(currentNetworks, 'currentNetworks');
-  
-
   //let networks = currentNetworks[0].messengers
 
   if (!tariffOptions || !trafficCombo) return null;
-
-  console.log(tariffOptions, 'tariffOptions');
-  
-
   return (
     <div>
       <div>
         <h1>Настройте тариф</h1>
-        <RangeSelector
-          label="Минуты"
-          selectedValue={userTariff.minutes}
-          values={tariffOptions.minutes}
-        />
-        <RangeSelector
-          label="Трафик"
-          selectedValue={userTariff.gigs}
-          values={tariffOptions.gigs}
-        />
-        <RangeSelector
-          label="СМС"
-          selectedValue={userTariff.sms}
-          values={tariffOptions.sms}
-        />
+        <div className="box-for-range" >
+          <RangeSelector 
+            label="Минуты"
+            selectedValue={userTariff.minutes}
+            values={tariffOptions.minutes}
+          />
+          <RangeSelector
+            label="Трафик"
+            selectedValue={userTariff.gigs}
+            values={tariffOptions.gigs}
+          />
+          <RangeSelector
+            label="СМС"
+            selectedValue={userTariff.sms}
+            values={tariffOptions.sms}
+          />
+          </div>
       </div>
       <div className={styles.socialNetworks}>
         <AddsSelector
-          image="fb"
+          network="fb"
           disabled={currentNetworks ? !networks.fb : true}
           price={20}
         />
         <AddsSelector
-          image="vk"
+          network="vk"
           disabled={currentNetworks ? !networks.vk : true}
           price={20}
         />
         <AddsSelector
-          image="ok"
+          network="ok"
           disabled={currentNetworks ? !networks.ok : true}
           price={20}
         />
         <AddsSelector
-          image="inst"
+          network="inst"
           disabled={currentNetworks ? !networks.inst : true}
           price={20}
         />
         <AddsSelector
-          image="tt"
+          network="tt"
           disabled={currentNetworks ? !networks.tt : true}
           price={20}
         /></div>
 
-      <div>tyt{output}</div>
+      <h3>Стоимость: </h3>
     </div>
   );
 }

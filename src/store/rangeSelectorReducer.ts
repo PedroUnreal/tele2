@@ -40,8 +40,6 @@ export const rangeSelectorReducer = (state = defaultState, action: any) => {
         case DELETE_ALL_NETWORKS:
             return { ...state, networks: [] };
         case ADD_TARIFF_INFO:
-            console.log(action.payload, 'action.payload');
-            
             return { ...state, tariffOptions: action.payload.tariffOptions, trafficCombo: action.payload.trafficCombo,
                 userTariff: action.payload.userTariff };
         default:
@@ -65,7 +63,6 @@ export const selectors = {
     getTariffOptions: (state: any) => state.rangeSelectors.tariffOptions,
     getTrafficCombo: (state: any) => state.rangeSelectors.trafficCombo,
     getUserTariff: (state: any) => state.rangeSelectors.userTariff,
+    getCurrentTariff: (state: any) => state.rangeSelectors
     //getUserById: (state:any, userId:any) => state.users.users.find(user :any => user.id === userId),
 }
-
-// const user: User = useSelector(state => selectors.getUserById(state, id));

@@ -13,20 +13,20 @@ const socialMediaIcons = {
 };
 
 type AddsSelectorProps = {
-  image: keyof typeof socialMediaIcons;
+  network: keyof typeof socialMediaIcons;
   disabled: boolean;
   price: number;
 };
 
-export function AddsSelector({ image, disabled, price }: AddsSelectorProps) {
+export function AddsSelector({ network, disabled, price }: AddsSelectorProps) {
   const [currentDisabled, setDisable] = useState(Boolean);
   const dispatch = useDispatch();
   const toggleDisabled = () => {
     if (disabled) {
       if (currentDisabled) {
-        setDisable(false); dispatch(addNetworkAction(image));
+        setDisable(false); dispatch(addNetworkAction(network));
       } else {
-        setDisable(true); dispatch(deleteNetworkAction(image))
+        setDisable(true); dispatch(deleteNetworkAction(network))
       }
     }
   };
@@ -40,8 +40,8 @@ export function AddsSelector({ image, disabled, price }: AddsSelectorProps) {
           [styles.imageFade]: currentDisabled,
           [styles.pictureSize]: true,
         })}
-        src={socialMediaIcons[image]}
-        alt={`${image}`}
+        src={socialMediaIcons[network]}
+        alt={`${network}`}
       />
       <div className={cn({ [styles.price]: !currentDisabled })}>
         +{price}руб

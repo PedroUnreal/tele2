@@ -13,19 +13,15 @@ type RangeSelectorProps = {
 export function RangeSelector({ label, selectedValue, values }: RangeSelectorProps) {   
     
      let counter = values.indexOf(selectedValue)
-    // console.log(values, "values");
-    console.log(counter);
-    
     const [chosenValue, setChosenValue] = useState(counter);
     const dispatch = useDispatch();
     const mapping = new Map()
     const max = values.length - 1
-    
-
     values.forEach((value, index) => mapping.set(index, value))
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setChosenValue(+e.target.value);
+        
     }
     
     if (label === "Минуты") {
@@ -45,13 +41,14 @@ export function RangeSelector({ label, selectedValue, values }: RangeSelectorPro
             dispatch(addSmsAction(minute));
         };
     }
-    useEffect(() => addToStore(mapping.get(chosenValue)))
+    useEffect(() => { console.log("!!!");
+     addToStore(mapping.get(chosenValue))},[chosenValue])
 
 
 
 
     return (
-        <div className="container px-4 m-2" style={{ border: 'solid 1px black' }}>
+        <div className="container px-4 mb-5" >
             <label htmlFor="customRange1" className="form-label">{label}
                 <input
                     type="range"
@@ -63,7 +60,8 @@ export function RangeSelector({ label, selectedValue, values }: RangeSelectorPro
                     onChange={handleChange}
                 />
             </label>
-            <div>{mapping.get(chosenValue)}</div>
+            {/* <div>{mapping.get(chosenValue)}</div> */}
+            <div className="current-option">{selectedValue}</div>
         </div>
     );
 }

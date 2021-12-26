@@ -37,3 +37,26 @@
     transform: translateY(0px);
   }
 }
+
+h1 {
+  margin-top: 1.5rem;
+  margin-left: 1.5rem
+}
+
+h3 {
+  margin-left: 1.5rem;
+  font-size: 2em;
+}
+
+.form-label {
+  width: 100%;
+  font-size: 2em;
+}
+
+.current-option {
+  font-size: 1.4em
+}
+
+.box-for-range {
+  width: 50%
+}

@@ -12,8 +12,5 @@ export const fetchTariffOptions = () => {
                 userTariff: json.userTariff[0]
             }))
         })
-       
-        
-        console.log('current state:', getState());
     }
 }
