@@ -112,7 +112,7 @@ export function ChooseTariffPage() {
           price={20}
         /></div>
 
-      <h3>Стоимость: </h3>
+      <h3>Стоимость: {rawCurrentTariff.userTariff.price}</h3>
     </div>
   );
 }

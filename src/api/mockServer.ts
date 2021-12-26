@@ -14,7 +14,40 @@ const server = createServer({
     this.post("/user-tariff", (schema, request) => {
       let attrs = JSON.parse(request.requestBody)
       //attrs.id = Math.floor(Math.random() * 100)
+      console.log(attrs, "attrs");
+      
+      //@ts-ignore
+      function calcTariff(currentTariff): any {
+         console.log(currentTariff, "poost");
+         
+        const templateObject = {
+          minutes: {
+            '200 мин': 100,
+            '400 мин': 200,
+            '500 мин': 300,
+            '800 мин': 400
+          },
+          gigs: {
+            '3ГБ': 100,
+            '10ГБ': 200,
+            '40ГБ': 400,
+          },
+          sms: {
+            "10": 10,
+            "50": 20,
+            "100": 30,
+            "300": 40,
+            "500": 50
+          }
+        }
 
+        
+        //@ts-ignore
+         attrs.price = templateObject.minutes[currentTariff.minutes] + templateObject.gigs[currentTariff.gigs] + templateObject.sms[currentTariff.sms] + Object.values(currentTariff.messengers).filter(item => !!item).length * 20
+      }
+
+     // const newTariff = calcTariff(schema.db.userTariff, attrs);
+     calcTariff(attrs)
       return schema.db.userTariff.update(attrs)
       // server.db.movies.insert({ title: "The Dark Knight" })
       //  schema.db.userTariff = calcTariff();
@@ -80,35 +113,12 @@ server.db.loadData({
     gigs: '10ГБ',
     sms: '50',
     messengers: [],
+    price: null
   },
 
 }
 
-  // function calcTariff(): any {
-
-  //   const templateObject = {
-  //     minutes: {
-  //       '200 мин': 100,
-  //       '400 мин': 200,
-  //       '500 мин': 400,
-  //       '800 мин': 500
-  //     },
-  //     gigs: {
-  //       '3ГБ': 100,
-  //       '10ГБ': 200,
-  //       '40 мин': 400,
-  //     },
-  //     sms: {
-  //       "10": 10,
-  //       "50": 20,
-  //       "100": 30,
-  //       "300": 40,
-  //       "500": 50
-  //     }
-  //   }
-  //   //@ts-ignore
-  //   return templateObject.minutes[this.minutes]
-  // }
+ 
 
 )
 
