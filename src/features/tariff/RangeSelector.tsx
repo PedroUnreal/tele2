@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux";
-import { addMinutesAction, addGigsAction, addSmsAction, selectors } from "../../store/rangeSelectorReducer";
+import { useDispatch } from "react-redux";
+import { addMinutesAction, addGigsAction, addSmsAction } from "../../store/rangeSelectorReducer";
 
 
 type RangeSelectorProps = {
@@ -10,9 +10,9 @@ type RangeSelectorProps = {
     selectedValue: string
 }
 
-export function RangeSelector({ label, selectedValue, values }: RangeSelectorProps) {   
-    
-     let counter = values.indexOf(selectedValue)
+export function RangeSelector({ label, selectedValue, values }: RangeSelectorProps) {
+
+    let counter = values.indexOf(selectedValue)
     const [chosenValue, setChosenValue] = useState(counter);
     const dispatch = useDispatch();
     const mapping = new Map()
@@ -21,31 +21,30 @@ export function RangeSelector({ label, selectedValue, values }: RangeSelectorPro
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setChosenValue(+e.target.value);
-        
+
     }
-    
+    let addToStore: Function
+
     if (label === "Минуты") {
-        var addToStore = (minute: number) => {
+        addToStore = (minute: number) => {
             dispatch(addMinutesAction(minute));
         };
     }
 
     if (label === "Трафик") {
-        var addToStore = (minute: number) => {
+        addToStore = (minute: number) => {
             dispatch(addGigsAction(minute));
         };
     }
 
     if (label === "СМС") {
-        var addToStore = (minute: number) => {
+        addToStore = (minute: number) => {
             dispatch(addSmsAction(minute));
         };
     }
-    useEffect(() => { console.log("!!!");
-     addToStore(mapping.get(chosenValue))},[chosenValue])
-
-
-
+    useEffect(() => {
+        addToStore(mapping.get(chosenValue))
+    }, [chosenValue])
 
     return (
         <div className="container px-4 mb-5" >
@@ -60,7 +59,6 @@ export function RangeSelector({ label, selectedValue, values }: RangeSelectorPro
                     onChange={handleChange}
                 />
             </label>
-            {/* <div>{mapping.get(chosenValue)}</div> */}
             <div className="current-option">{selectedValue}</div>
         </div>
     );

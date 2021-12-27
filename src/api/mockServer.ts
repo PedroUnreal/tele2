@@ -1,25 +1,14 @@
 import { createServer, Response } from "miragejs"
 import { totalmem, userInfo } from "os"
 
-
-
-
-
 const server = createServer({
   routes() {
     this.namespace = "api"
-
-
-
     this.post("/user-tariff", (schema, request) => {
       let attrs = JSON.parse(request.requestBody)
-      //attrs.id = Math.floor(Math.random() * 100)
-      console.log(attrs, "attrs");
-      
+
       //@ts-ignore
       function calcTariff(currentTariff): any {
-         console.log(currentTariff, "poost");
-         
         const templateObject = {
           minutes: {
             '200 мин': 100,
@@ -40,18 +29,11 @@ const server = createServer({
             "500": 50
           }
         }
-
-        
         //@ts-ignore
-         attrs.price = templateObject.minutes[currentTariff.minutes] + templateObject.gigs[currentTariff.gigs] + templateObject.sms[currentTariff.sms] + Object.values(currentTariff.messengers).filter(item => !!item).length * 20
+        attrs.price = templateObject.minutes[currentTariff.minutes] + templateObject.gigs[currentTariff.gigs] + templateObject.sms[currentTariff.sms] + Object.values(currentTariff.messengers).filter(item => !!item).length * 20
       }
-
-     // const newTariff = calcTariff(schema.db.userTariff, attrs);
-     calcTariff(attrs)
+      calcTariff(attrs)
       return schema.db.userTariff.update(attrs)
-      // server.db.movies.insert({ title: "The Dark Knight" })
-      //  schema.db.userTariff = calcTariff();
-      //  return schema.db.userTariff
     })
 
     this.get("/tariffs", (schema) => {
@@ -107,18 +89,12 @@ server.db.loadData({
       }
     }
   ],
-
   userTariff: {
     minutes: '400 мин',
     gigs: '10ГБ',
     sms: '50',
     messengers: [],
     price: null
-  },
-
-}
-
- 
-
-)
+  }
+})
 

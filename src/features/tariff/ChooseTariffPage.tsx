@@ -10,7 +10,6 @@ import styles from './styles.module.css';
 export function ChooseTariffPage() {
 
   const rawCurrentTariff = useSelector(state => selectors.getCurrentTariff(state))
-  console.log(rawCurrentTariff, "raw");
 
   const currentTariff = {
     minutes: rawCurrentTariff.minutes,
@@ -23,16 +22,13 @@ export function ChooseTariffPage() {
       inst: rawCurrentTariff.networks.includes("inst"),
       tt: rawCurrentTariff.networks.includes("tt")
     }
-
   }
-  console.log(currentTariff, "currentTariff");
-
 
   const gigs = useSelector(state => selectors.getGigs(state))
   const userTariff = useSelector(state => selectors.getUserTariff(state))
   const tariffOptions = useSelector(state => selectors.getTariffOptions(state))
   const trafficCombo = useSelector(state => selectors.getTrafficCombo(state))
-  const [output, setOutput] = useState(gigs);
+  const [currentGigs, setCurrentGigs] = useState(gigs);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,27 +36,25 @@ export function ChooseTariffPage() {
   }, [])
 
   useEffect(() => {
-
     fetch('api/user-tariff', {
       method: 'post',
       body: JSON.stringify(currentTariff)
     });
-    setOutput(gigs);
+    setCurrentGigs(gigs);
   }, [currentTariff])
 
   useEffect(() => {
     dispatch(fetchTariffOptions())
   }, [currentTariff.gigs, currentTariff.minutes, currentTariff.sms,
   currentTariff.messengers.fb, currentTariff.messengers.vk, currentTariff.messengers.ok,
-  currentTariff.messengers.inst, currentTariff.messengers.tt,])
+  currentTariff.messengers.inst, currentTariff.messengers.tt])
 
   const currentNetworks = useMemo(() => {
     if (!trafficCombo) return null;
-    return trafficCombo.find((tariff: any) => tariff.gigs === output) || null;
-  }, [trafficCombo, output]);
+    return trafficCombo.find((tariff: any) => tariff.gigs === currentGigs) || null;
+  }, [trafficCombo, currentGigs]);
 
   const networks = currentNetworks?.messengers ?? {};
-  //let networks = currentNetworks[0].messengers
 
   if (!tariffOptions || !trafficCombo) return null;
   return (
