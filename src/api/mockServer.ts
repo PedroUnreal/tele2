@@ -1,40 +1,58 @@
-import { createServer, Response } from "miragejs"
-import { totalmem, userInfo } from "os"
+import { createServer } from "miragejs"
 
+/**
+ * Карта стоимости различных услуг
+ */
+const priceObject: Record<'minutes' | 'gigs' | 'sms', Record<string, number>> = {
+  minutes: {
+    '200 мин': 100,
+    '400 мин': 200,
+    '500 мин': 300,
+    '800 мин': 400
+  },
+  gigs: {
+    '3ГБ': 100,
+    '10ГБ': 200,
+    '40ГБ': 400,
+  },
+  sms: {
+    "10": 10,
+    "50": 20,
+    "100": 30,
+    "300": 40,
+    "500": 50
+  }
+}
+
+/**
+ * Пакеты трафика и включенные в их стоимость мессенджеры
+ */
+const trafficCombo: Array<{
+  gigs: string;
+  messengers: Messenger[]
+}> = [
+    {
+      gigs: "3ГБ",
+      messengers: []
+    },
+
+    {
+      gigs: "10ГБ",
+      messengers: ["fb", "vk", "ok"]
+    },
+
+    {
+      gigs: "40ГБ",
+      messengers: ["fb", "vk", "ok", "inst", "tt"]
+    }
+  ];
+
+/**
+ * Мок-сервер
+ */
 const server = createServer({
   routes() {
-    this.namespace = "api"
-    this.post("/user-tariff", (schema, request) => {
-      let attrs = JSON.parse(request.requestBody)
-
-      //@ts-ignore
-      function calcTariff(currentTariff): any {
-        const templateObject = {
-          minutes: {
-            '200 мин': 100,
-            '400 мин': 200,
-            '500 мин': 300,
-            '800 мин': 400
-          },
-          gigs: {
-            '3ГБ': 100,
-            '10ГБ': 200,
-            '40ГБ': 400,
-          },
-          sms: {
-            "10": 10,
-            "50": 20,
-            "100": 30,
-            "300": 40,
-            "500": 50
-          }
-        }
-        //@ts-ignore
-        attrs.price = templateObject.minutes[currentTariff.minutes] + templateObject.gigs[currentTariff.gigs] + templateObject.sms[currentTariff.sms] + Object.values(currentTariff.messengers).filter(item => !!item).length * 20
-      }
-      calcTariff(attrs)
-      return schema.db.userTariff.update(attrs)
-    })
+    this.namespace = "api";
 
     this.get("/tariffs", (schema) => {
       return {
@@ -42,12 +60,28 @@ const server = createServer({
         trafficCombo: schema.db.trafficCombo,
         userTariff: schema.db.userTariff,
       }
-      //   return new Response(500, headers, data)
-    })
+    });
+
+    this.put("/user-tariff", (schema, request) => {
+      const selectedTariffValues = JSON.parse(request.requestBody);
+      const newTariff = calcTariff(selectedTariffValues);
+      schema.db.userTariff.update(newTariff);
+
+      return schema.db.userTariff;
+    });
   },
 })
 
+const defaultTariffValues = {
+  minutes: '400 мин',
+  gigs: '10ГБ',
+  sms: '50',
+  messengers: [],
+}
 
+/**
+ * Загрузка начальных данных
+ */
 server.db.loadData({
   tariffOptions: {
     minutes: ["200 мин", "400 мин", "500 мин", "800 мин"],
@@ -55,46 +89,26 @@ server.db.loadData({
     sms: ["10", "50", "100", "300", "500"],
     messengers: ["fb", "vk", "ok", "inst", "tt"]
   },
-  trafficCombo: [
-    {
-      gigs: "3ГБ",
-      messengers: {
-        fb: false,
-        vk: false,
-        ok: false,
-        inst: false,
-        tt: false
-      }
-    },
-
-    {
-      gigs: "10ГБ",
-      messengers: {
-        fb: true,
-        vk: true,
-        ok: true,
-        inst: false,
-        tt: false
-      }
-    },
-
-    {
-      gigs: "40ГБ",
-      messengers: {
-        fb: true,
-        vk: true,
-        ok: true,
-        inst: true,
-        tt: true
-      }
-    }
-  ],
+  trafficCombo,
   userTariff: {
-    minutes: '400 мин',
-    gigs: '10ГБ',
-    sms: '50',
-    messengers: [],
-    price: null
+    ...calcTariff(defaultTariffValues)
   }
 })
 
+/**
+ * Логика расчета стоимости
+ */
+function calcTariff(currentTariff: Omit<IUserTariff, 'price'>): IUserTariff {
+  const includedMessengers = trafficCombo.find((combo: ITrafficCombo) => combo.gigs === currentTariff.gigs)?.messengers ?? [];
+  const extraMessengers = currentTariff.messengers.filter(messenger => !includedMessengers.includes(messenger));
+
+  const price = priceObject.minutes[currentTariff.minutes]
+    + priceObject.gigs[currentTariff.gigs]
+    + priceObject.sms[currentTariff.sms]
+    + extraMessengers.length * 20;
+
+  return {
+    ...currentTariff,
+    price,
+  }
+}

@@ -1,13 +1,12 @@
-import React from 'react';
 import './App.css';
-import { ChooseTariffPage } from './features/tariff/ChooseTariffPage';
+import { ChooseTariffPage } from './components/tariff/ChooseTariffPage';
 import './api/mockServer';
 
 
 function App() {
   return (
     <div>
-      <ChooseTariffPage/>
+      <ChooseTariffPage />
     </div>
   );
 }

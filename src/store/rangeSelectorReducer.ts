@@ -1,68 +1,49 @@
-const defaultState = {
-    minutes: [],
-    gigs: [],
-    sms: [],
-    networks: [],
-    tariffOptions: null,
-    trafficCombo: null,
-    userTariff: null,
+import { RootState } from "./index";
+
+export interface ITariffState {
+	tariffOptions: ITariffOptions | null,
+	trafficCombo: ITrafficCombo[] | null,
+	userTariff: {
+		minutes: string,
+		gigs: string,
+		sms: string,
+		messengers: Messenger[],
+		price: number,
+	} | null
+}
+
+const defaultState: ITariffState = {
+	tariffOptions: null,
+	trafficCombo: null,
+	userTariff: null,
 };
 
-const ADD_MINUTES = "ADD_MINUTES"
-const ADD_GIGS = "ADD_GIGS"
-const ADD_SMS = "ADD_SMS"
-const ADD_NETWORK = "ADD_NETWORKS"
-const DELETE_NETWORK = "DELETE_NETWORK"
-const DELETE_ALL_NETWORKS = "DELETE_ALL_NETWORKS"
-const ADD_TARIFF_INFO = "ADD_TARIFF_INFO"
+const SET_ALL_TARIFFS_INFO = "SET_ALL_TARIFFS_INFO";
+const SET_USER_TARIFF = "SET_USER_TARIFF";
 
-// interface User {
-//   id: number;
-//   firstName: string;
-//   lastName: string;
-//   picture: string;
-//   title: string;
-// }
+export const actionCreators = {
+	addTariffInfoAction: (payload: ITariffState) => ({ type: SET_ALL_TARIFFS_INFO, payload } as const),
+	setUserTariffAction: (payload: IUserTariff) => ({ type: SET_USER_TARIFF, payload } as const)
+}
 
-export const rangeSelectorReducer = (state = defaultState, action: any) => {
-    switch (action.type) {
-        case ADD_MINUTES:
-            //return { ...state, rangeSelectors: [...state.rangeSelectors, action.payload] };
-            return { ...state, minutes: action.payload };
-        case ADD_GIGS:
-            return { ...state, gigs: action.payload };
-        case ADD_SMS:
-            return { ...state, sms: action.payload };
-        case ADD_NETWORK:
-            return { ...state, networks: [...state.networks, action.payload] };
-        case DELETE_NETWORK:
-            return { ...state, networks: [...(state.networks.filter(network => network !== action.payload))] };
-        case DELETE_ALL_NETWORKS:
-            return { ...state, networks: [] };
-        case ADD_TARIFF_INFO:
-            return { ...state, tariffOptions: action.payload.tariffOptions, trafficCombo: action.payload.trafficCombo,
-                userTariff: action.payload.userTariff };
-        default:
-            return state;
-    }
+type TariffActions = ReturnType<PropertiesTypes<typeof actionCreators>>;
+
+export const rangeSelectorReducer = (state: ITariffState = defaultState, action: TariffActions): ITariffState => {
+	switch (action.type) {
+		case SET_ALL_TARIFFS_INFO:
+			return action.payload;
+		case SET_USER_TARIFF:
+			return {
+				...state,
+				userTariff: action.payload,
+			};
+		default:
+			return state;
+	}
 };
 
-export const addMinutesAction = (payload: number) => ({ type: ADD_MINUTES, payload })
-export const addGigsAction = (payload: number) => ({ type: ADD_GIGS, payload })
-export const addSmsAction = (payload: number) => ({ type: ADD_SMS, payload })
-export const addNetworkAction = (payload: string) => ({ type: ADD_NETWORK, payload })
-export const deleteNetworkAction = (payload: string) => ({ type: DELETE_NETWORK, payload })
-export const deleteAllNetworksAction = () => ({ type: DELETE_ALL_NETWORKS })
-export const addTariffInfoAction = (payload: any) => ({ type: ADD_TARIFF_INFO, payload });
-
-
-// Export a reusable selector here
 export const selectors = {
-    getGigs: (state: any) => state.rangeSelectors.gigs,
-    getNetworks: (state: any) => state.rangeSelectors.networks,
-    getTariffOptions: (state: any) => state.rangeSelectors.tariffOptions,
-    getTrafficCombo: (state: any) => state.rangeSelectors.trafficCombo,
-    getUserTariff: (state: any) => state.rangeSelectors.userTariff,
-    getCurrentTariff: (state: any) => state.rangeSelectors
-    //getUserById: (state:any, userId:any) => state.users.users.find(user :any => user.id === userId),
+	getTariffOptions: (state: RootState) => state.rangeSelectors.tariffOptions,
+	getTrafficCombo: (state: RootState) => state.rangeSelectors.trafficCombo,
+	getUserTariff: (state: RootState) => state.rangeSelectors.userTariff,
 }

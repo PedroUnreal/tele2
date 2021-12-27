@@ -1,0 +1,16 @@
+.image {
+  width: 30px;
+  cursor: pointer;
+}
+
+.imageFade {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.messengers {
+  margin: 30px;
+  width: 50%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
