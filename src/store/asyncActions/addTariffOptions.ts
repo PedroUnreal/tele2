@@ -9,7 +9,8 @@ export const fetchTariffOptions = () => {
 				dispatch(actionCreators.addTariffInfoAction({
 					tariffOptions: json.tariffOptions[0], // MirageJS всегда возвращает массив
 					trafficCombo: json.trafficCombo,
-					userTariff: json.userTariff[0]
+					userTariff: json.userTariff[0],
+					messengerPriceCombo: json.messengerPriceCombo[0]
 				}))
 			})
 	}

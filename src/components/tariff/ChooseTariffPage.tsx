@@ -14,6 +14,7 @@ export function ChooseTariffPage() {
   const userTariff = useSelector(selectors.getUserTariff);
   const tariffOptions = useSelector(selectors.getTariffOptions);
   const trafficCombo = useSelector(selectors.getTrafficCombo);
+  const messengerPriceCombo = useSelector(selectors.getMessengerPriceCombo)
   const dispatch = useDispatch();
   const messengers: Messenger[] = ['fb', 'vk', 'ok', 'inst', 'tt']
 
@@ -52,7 +53,7 @@ export function ChooseTariffPage() {
     }
   }, [dispatch, userTariff, messengerIsInCombo]);
 
-  if (!tariffOptions || !trafficCombo || !userTariff) return null;
+  if (!tariffOptions || !trafficCombo || !userTariff || !messengerPriceCombo) return null;
 
   return (
     <div>
@@ -81,13 +82,13 @@ export function ChooseTariffPage() {
         </div>
       </div>
       <div className={styles.messengers}>
-        {messengers.map(mes =>
+        {messengers.map((mes: Messenger) =>
           <MessengerSelector
             key={mes}
             messenger={mes}
             label={messengerIsInCombo(mes) ? 'Включен в тариф' : ''}
             selected={selectedMessengers.includes(mes)}
-            price={20}
+            price={messengerPriceCombo[mes]}
             onChange={() => updateMessenger(mes)} />
 
         )}

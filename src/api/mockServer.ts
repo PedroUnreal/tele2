@@ -47,6 +47,16 @@ const trafficCombo: Array<{
     }
   ];
 
+
+const messengerPriceCombo: Record<Messenger, number> =
+{
+  "fb": 10,
+  "vk": 10,
+  "ok": 10,
+  "inst": 20,
+  "tt": 40
+}
+
 /**
  * Мок-сервер
  */
@@ -59,6 +69,7 @@ const server = createServer({
         tariffOptions: schema.db.tariffOptions,
         trafficCombo: schema.db.trafficCombo,
         userTariff: schema.db.userTariff,
+        messengerPriceCombo: schema.db.messengerPriceCombo
       }
     });
 
@@ -92,7 +103,8 @@ server.db.loadData({
   trafficCombo,
   userTariff: {
     ...calcTariff(defaultTariffValues)
-  }
+  },
+  messengerPriceCombo
 })
 
 /**
@@ -105,7 +117,9 @@ function calcTariff(currentTariff: Omit<IUserTariff, 'price'>): IUserTariff {
   const price = priceObject.minutes[currentTariff.minutes]
     + priceObject.gigs[currentTariff.gigs]
     + priceObject.sms[currentTariff.sms]
-    + extraMessengers.length * 20;
+    + extraMessengers.reduce((sum, messenger) => {
+      return sum + messengerPriceCombo[messenger]
+    }, 0)
 
   return {
     ...currentTariff,

@@ -7,13 +7,15 @@ export interface ITariffState {
 		sms: string,
 		messengers: Messenger[],
 		price: number,
-	} | null
+	} | null,
+	messengerPriceCombo: Record<Messenger, number> | null
 }
 
 const defaultState: ITariffState = {
 	tariffOptions: null,
 	trafficCombo: null,
 	userTariff: null,
+	messengerPriceCombo: null
 };
 
 const SET_ALL_TARIFFS_INFO = "SET_ALL_TARIFFS_INFO";
