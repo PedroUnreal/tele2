@@ -1,5 +1,3 @@
-import { RootState } from "./index";
-
 export interface ITariffState {
 	tariffOptions: ITariffOptions | null,
 	trafficCombo: ITrafficCombo[] | null,
@@ -42,8 +40,4 @@ export const rangeSelectorReducer = (state: ITariffState = defaultState, action:
 	}
 };
 
-export const selectors = {
-	getTariffOptions: (state: RootState) => state.rangeSelectors.tariffOptions,
-	getTrafficCombo: (state: RootState) => state.rangeSelectors.trafficCombo,
-	getUserTariff: (state: RootState) => state.rangeSelectors.userTariff,
-}
+

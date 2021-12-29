@@ -1,18 +1,18 @@
-declare type Messenger = 'fb' | 'vk' | 'ok' | 'inst' | 'tt';
+type Messenger = 'fb' | 'vk' | 'ok' | 'inst' | 'tt';
 
-declare interface ITariffOptions {
+interface ITariffOptions {
 	minutes: string[],
 	gigs: string[],
 	sms: string[],
 	messengers: Messenger[]
 }
 
-declare interface ITrafficCombo {
+interface ITrafficCombo {
 	gigs: string,
 	messengers: Messenger[]
 }
 
-declare interface IUserTariff {
+interface IUserTariff {
 	minutes: string,
 	gigs: string,
 	sms: string,
@@ -20,4 +20,4 @@ declare interface IUserTariff {
 	price: number
 }
 
-declare type PropertiesTypes<T> = T extends Record<string, infer U> ? U : never;
+type PropertiesTypes<T> = T extends Record<string, infer U> ? U : never;

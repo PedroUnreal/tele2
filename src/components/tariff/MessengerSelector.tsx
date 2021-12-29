@@ -41,7 +41,7 @@ export function MessengerSelector({ messenger, selected, price, label, onChange 
         </div>
       )}
 
-      {label && <div>Включен в тариф</div>}
+      {label && <div>{label}</div>}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { debounce } from '../../utils/debounce';
 import { fetchTariffOptions, updateCurrentTariff, updateCurrentNetwork } from '../../store/asyncActions/addTariffOptions';
-import { selectors } from '../../store/rangeSelectorReducer';
+import { selectors } from '../../store/rangeSelectors';
 import { MessengerSelector } from './MessengerSelector';
 import { RangeSelector } from './RangeSelector';
 import styles from './styles.module.css';
@@ -14,6 +15,7 @@ export function ChooseTariffPage() {
   const tariffOptions = useSelector(selectors.getTariffOptions);
   const trafficCombo = useSelector(selectors.getTrafficCombo);
   const dispatch = useDispatch();
+  const messengers: Messenger[] = ['fb', 'vk', 'ok', 'inst', 'tt']
 
   const selectedMessengers = useMemo(() => {
     if (!trafficCombo || !userTariff) return [];
@@ -36,9 +38,9 @@ export function ChooseTariffPage() {
     dispatch(fetchTariffOptions())
   }, [dispatch])
 
-  const updateCurrentUserTariff = useCallback((key: string, value: string) => {
+  const updateCurrentUserTariff = debounce((key: string, value: string) => {
     dispatch(updateCurrentTariff(key, value))
-  }, [dispatch]);
+  }, 100);
 
   const updateMessenger = useCallback((messenger: Messenger) => {
     if (userTariff) {
@@ -57,7 +59,7 @@ export function ChooseTariffPage() {
       <div>
         <h1>Настройте тариф</h1>
         <div className="box-for-range" >
-          <RangeSelector 
+          <RangeSelector
             label="Минуты"
             selectedValue={userTariff.minutes}
             values={tariffOptions.minutes}
@@ -76,45 +78,20 @@ export function ChooseTariffPage() {
             values={tariffOptions.sms}
             onChange={(value) => updateCurrentUserTariff('sms', value)}
           />
-          </div>
+        </div>
       </div>
       <div className={styles.messengers}>
-        <MessengerSelector
-          messenger="fb"
-          label={messengerIsInCombo('fb') ? 'Включен в тариф' : ''}
-          selected={selectedMessengers.includes('fb')}
-          price={20}
-          onChange={() => updateMessenger('fb')}
-        />
-        <MessengerSelector
-          messenger="vk"
-          label={messengerIsInCombo('vk') ? 'Включен в тариф' : ''}
-          selected={selectedMessengers.includes('vk')}
-          price={20}
-          onChange={() => updateMessenger('vk')}
-        />
-        <MessengerSelector
-          messenger="ok"
-          label={messengerIsInCombo('ok') ? 'Включен в тариф' : ''}
-          selected={selectedMessengers.includes('ok')}
-          price={20}
-          onChange={() => updateMessenger('ok')}
-        />
-        <MessengerSelector
-          messenger="inst"
-          label={messengerIsInCombo('inst') ? 'Включен в тариф' : ''}
-          selected={selectedMessengers.includes('inst')}
-          price={20}
-          onChange={() => updateMessenger('inst')}
-        />
-        <MessengerSelector
-          messenger="tt"
-          label={messengerIsInCombo('tt') ? 'Включен в тариф' : ''}
-          selected={selectedMessengers.includes('tt')}
-          price={20}
-          onChange={() => updateMessenger('tt')}
-        /> 
-        </div>
+        {messengers.map(mes =>
+          <MessengerSelector
+            key={mes}
+            messenger={mes}
+            label={messengerIsInCombo(mes) ? 'Включен в тариф' : ''}
+            selected={selectedMessengers.includes(mes)}
+            price={20}
+            onChange={() => updateMessenger(mes)} />
+
+        )}
+      </div>
 
       <h3>Стоимость: {userTariff.price} руб.</h3>
     </div>
